@@ -1,0 +1,73 @@
+# 工作区约定
+
+> **这是模板。** 把它改名成工作区根目录的 `AGENTS.md`（或 `CLAUDE.md`），
+> 支持自动加载指令文件的 agent 就会在每次会话读到它。
+> 把下面出现的路径改成你自己的实际路径——假设 `learning-pages/` 就在工作区根目录下。
+
+本文件在每个会话启动时自动加载。**只在触发条件下才读后面的细节，平时不要占上下文。**
+
+---
+
+## 🔔 触发条件：交互式学习页
+
+当用户的请求符合下面任一情况时，**不要反问细节、不要重新设计版式**，直接按既定范式产出：
+
+- 「做一份关于 X 的学习页面 / 教程页 / 交互式页面」
+- 「把这份资料（PDF / 文档 / 题目）做成上次那种页面」
+- 「用类似之前的交互模式讲一下 X」
+- 给了素材 + 「跟上次一样」「照那个格式来」
+
+**工作流（照做，不要跳步）：**
+
+1. **读规范**：`learning-pages/SPEC.md`（内容结构 + 写作规范 + 红线，全文必读）
+2. **定素材**：
+   - PDF → 先提取文本：`.\learning-pages\tools\pdf2text.ps1 -Pdf "<路径>"`，然后**通读全文**再动笔
+   - 其他文件 / 网页 → 直接读
+   - 只有笼统主题 → 自己搜集信息；若关键前提不明（面向谁、多深、有无指定素材），
+     **先用 `ask_user_question` 问一次**，不要瞎猜
+3. **建页面**：`node learning-pages/tools/new.js <目录名> --brand "标题" --subtitle "副标题"`
+4. **写内容**：只编辑 `<目录名>/content.js`，按 SPEC 的 schema 和写作规范
+5. **构建**：`node learning-pages/tools/build.js <目录名>`
+6. **校验**：`node learning-pages/tools/validate.js <目录名>` ——
+   **错误必须清零**；提示要么修掉，要么能说出为什么保留
+7. **打开**：`Start-Process <目录名>\index.html`
+8. **回复**：说明产出了什么、验证了什么、哪里有不确定
+
+**这个范式容易踩的两个点：**
+
+- **不要直接给可交差的成品答案或完整代码**（作业 / 考试 / 竞赛类素材）。
+  给思路、骨架、参数、坑，把动手留给读者。见 SPEC「红线」一节。
+- **数字、样例、判定条件必须实际算过或跑过。** 推导不出来就如实标注不确定，不要编。
+
+---
+
+## 工具速查
+
+| 用途 | 命令 |
+|---|---|
+| 新建页面 | `node learning-pages/tools/new.js <目录名> --brand "标题"` |
+| 构建（单页 / 全部） | `node learning-pages/tools/build.js <目录名>` / `--all` |
+| 结构校验（单页 / 全部） | `node learning-pages/tools/validate.js <目录名>` / `--all` |
+| PDF 提取文本 | `.\learning-pages\tools\pdf2text.ps1 -Pdf "<路径>" [-Out "<路径>"]` |
+
+**改引擎之后一定跑 `validate.js --all`**，把已有页面全部重建校验一遍——这是改引擎的安全网。
+
+---
+
+## 其他约定
+
+- 页面产物 `index.html` 是构建出来的，**永远不要手改**；要改内容就改 `content.js` 再构建。
+- 页面目录直接放在工作区根，和 `learning-pages/` 并列——工具只扫工作区根的**直接子目录**。
+- 内容的 `storageKey` 在增删节或调整选项顺序后要 **+1**，否则读者旧进度会错位。
+
+### Windows 环境的两个坑
+
+1. **`.ps1` 文件必须带 UTF-8 BOM。** Windows PowerShell 5.1 会把无 BOM 的脚本按 ANSI 解码，
+   中文注释被撕碎、直接语法报错（表现为 `param` 块报 `Missing expression after ','`）。
+2. **不要在调用原生命令（uv / node / git）的脚本里设 `$ErrorActionPreference = 'Stop'`。**
+   原生命令往 stderr 写进度会被当成致命错误。改成 `'Continue'`，用 `$LASTEXITCODE` 判断成败。
+
+### 别把大文件写进工作区
+
+如果工作区在网盘同步目录下（OneDrive / Dropbox 等），**不要把几百 MB 的临时环境或缓存写进来**。
+`pdf2text.ps1` 默认把 uv 的缓存写到 `%TEMP%` 就是出于这个考虑。用完即删。

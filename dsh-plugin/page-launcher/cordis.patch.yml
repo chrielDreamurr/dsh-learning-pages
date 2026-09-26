@@ -1,0 +1,4 @@
+# 页面速览 (page launcher)
+- insert:
+    - id: ui-page-launcher
+      name: '@dsh-external/dsh-client-ui-page-launcher'

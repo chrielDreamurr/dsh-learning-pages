@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>骨架示例 · 学习指南</title>
+<style>
+:root{
+  --bg:#0f1117; --panel:#161a22; --panel2:#1b2029; --bd:#272e3a; --bd2:#333c4b;
+  --tx:#e6e9ef; --mut:#98a2b3; --ac:#4f9cf9; --acd:#1e3a5f;
+  --ok:#3fb950; --okd:#12331c; --bad:#f85149; --badd:#3a1a18; --warn:#d29922;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;
+  font-size:15px; line-height:1.78; display:grid; grid-template-columns:290px 1fr; height:100vh; overflow:hidden;
+}
+
+/* ---------- 侧栏 ---------- */
+aside{background:var(--panel); border-right:1px solid var(--bd); display:flex; flex-direction:column; overflow:hidden}
+.brand{padding:16px 18px 12px; border-bottom:1px solid var(--bd)}
+.brand h1{font-size:15px; margin:0 0 4px; letter-spacing:.3px}
+.brand p{margin:0; font-size:12px; color:var(--mut)}
+.brand .bar{height:5px; background:#0c0f14; border-radius:3px; margin-top:11px; overflow:hidden}
+.brand .bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--ac),#7c5cff); transition:width .3s}
+.brand .pct{font-size:11px; color:var(--mut); margin-top:6px; display:flex; justify-content:space-between}
+nav{overflow-y:auto; padding:10px 8px 24px; flex:1}
+nav .grp{font-size:11px; color:var(--mut); padding:12px 10px 5px; letter-spacing:.5px; font-weight:600}
+nav a{display:flex; gap:9px; align-items:flex-start; padding:7px 10px; border-radius:7px; color:var(--tx);
+  text-decoration:none; font-size:13px; line-height:1.5; cursor:pointer; border:1px solid transparent}
+nav a:hover{background:#1e232d}
+nav a.cur{background:var(--acd); border-color:#2d5c96}
+nav a .dot{flex:0 0 15px; height:15px; margin-top:4px; border-radius:50%; border:1.5px solid var(--bd2);
+  font-size:9px; display:flex; align-items:center; justify-content:center; color:#0b0e13}
+nav a.done .dot{background:var(--ok); border-color:var(--ok)}
+nav a.cur .dot{border-color:var(--ac)}
+nav a.done span{color:var(--mut)}
+
+/* ---------- 主区 ---------- */
+main{display:flex; flex-direction:column; overflow:hidden; min-width:0}
+.topbar{display:flex; align-items:center; gap:12px; padding:10px 22px; border-bottom:1px solid var(--bd); background:var(--panel)}
+.topbar .chip{font-size:12px; color:var(--mut)}
+.topbar .sp{flex:1}
+button{font-family:inherit; font-size:13.5px; border-radius:8px; border:1px solid var(--bd2);
+  background:var(--panel2); color:var(--tx); padding:8px 16px; cursor:pointer; transition:.15s}
+button:hover:not(:disabled){background:#242b36; border-color:#46536a}
+button:disabled{opacity:.35; cursor:not-allowed}
+button.primary{background:var(--ac); border-color:var(--ac); color:#08111d; font-weight:600}
+button.primary:hover:not(:disabled){background:#6aabfb}
+button.ghost{background:transparent; border-color:transparent; color:var(--mut); padding:8px 10px}
+button.ghost:hover{color:var(--tx); background:#1e232d}
+button.tiny{font-size:12px; padding:4px 10px}
+
+.content{overflow-y:auto; padding:34px 44px 60px; flex:1; scroll-behavior:smooth}
+.wrap{max-width:850px; margin:0 auto}
+.crumb{font-size:12px; color:var(--ac); letter-spacing:.4px; margin-bottom:8px}
+h2.title{font-size:24px; margin:0 0 20px; line-height:1.45}
+h2.title .tag{font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px; margin-left:10px;
+  vertical-align:middle; background:var(--acd); border:1px solid #2d5c96; color:#8fc4ff}
+.body p{margin:0 0 14px}
+.body ul,.body ol{margin:0 0 14px; padding-left:22px}
+.body li{margin-bottom:7px}
+.body b,.body strong{color:#fff}
+.body code{background:#0c1016; border:1px solid var(--bd); border-radius:5px; padding:1.5px 6px;
+  font-family:Consolas,"Cascadia Mono",monospace; font-size:13px; color:#8fd0ff}
+pre{background:#0b0f15; border:1px solid var(--bd); border-left:3px solid #38445c;
+  border-radius:9px; padding:14px 16px; overflow-x:auto; margin:0 0 16px}
+pre code{background:none; border:none; padding:0; color:#cfd8e6; font-size:13px; line-height:1.7}
+pre .cm{color:#5f6b7c} pre .kw{color:#c792ea} pre .ok{color:#7ee787} pre .no{color:#ff9d97} pre .hl{color:#ffd479}
+table{width:100%; border-collapse:collapse; margin:0 0 16px; font-size:13.5px}
+th,td{border:1px solid var(--bd); padding:8px 11px; text-align:left; vertical-align:top}
+th{background:#1b2029; color:var(--mut); font-weight:600; font-size:12.5px}
+kbd{background:#222a36; border:1px solid var(--bd2); border-bottom-width:2px; border-radius:5px;
+  padding:1px 6px; font-size:11.5px; font-family:Consolas,monospace; color:var(--tx)}
+
+/* ---------- 卡片 ---------- */
+.callout{border-radius:9px; padding:13px 16px; margin:0 0 16px; font-size:14px; border:1px solid}
+.callout .lb{font-weight:700; font-size:12.5px; letter-spacing:.5px; display:block; margin-bottom:5px}
+.c-key{background:#12233a; border-color:#274a75}  .c-key .lb{color:#6db3ff}
+.c-warn{background:#2b2110; border-color:#5c4a1c} .c-warn .lb{color:#e3b341}
+.c-tip{background:#12271a; border-color:#27502f}  .c-tip .lb{color:#5fd07a}
+.c-task{background:#1d1730; border-color:#3f3462} .c-task .lb{color:#b18cff}
+.c-term{background:#0e2733; border-color:#1f5566} .c-term .lb{color:#4fd1c5}
+.term{display:grid; grid-template-columns:130px 1fr; gap:6px 14px; margin:0; font-size:14px}
+.term b{color:#4fd1c5; font-weight:600}
+
+/* ---------- 题目卡 ---------- */
+.quiz{margin-top:30px; border:1px solid var(--bd2); border-radius:13px; overflow:hidden; background:var(--panel)}
+.quiz .qh{padding:14px 20px; background:#1b2029; border-bottom:1px solid var(--bd); display:flex; gap:10px; align-items:baseline}
+.quiz .qh .tag{font-size:11px; color:#08111d; background:var(--ac); padding:2px 8px; border-radius:20px; font-weight:700; flex:0 0 auto}
+.quiz .qh .tag.sv{background:#8b7cd8}
+.quiz .qh .qt{font-weight:600; font-size:15px; line-height:1.6}
+.opts{padding:12px 14px 4px}
+.opt{display:flex; gap:12px; padding:11px 13px; border:1px solid var(--bd); border-radius:9px; margin-bottom:9px;
+  cursor:pointer; transition:.13s; background:#151a22; align-items:flex-start}
+.opt:hover{border-color:#46536a; background:#1a202a}
+.opt .num{flex:0 0 22px; height:22px; border-radius:6px; background:#222a36; color:var(--mut);
+  font-size:11.5px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:2px}
+.opt .tx{flex:1; min-width:0}
+.opt .lb{font-weight:600; font-size:14px}
+.opt .ds{font-size:12.5px; color:var(--mut); margin-top:3px; line-height:1.6}
+.opt .why{font-size:13px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--bd2); display:none; line-height:1.72}
+.opt.lock{cursor:default}
+.opt.lock:hover{border-color:var(--bd); background:#151a22}
+.opt.sel-ok{border-color:var(--ok); background:var(--okd)}
+.opt.sel-ok .num{background:var(--ok); color:#06180c}
+.opt.sel-bad{border-color:var(--bad); background:var(--badd)}
+.opt.sel-bad .num{background:var(--bad); color:#2a0c0a}
+.opt.reveal{border-color:#2c6b38}
+.opt.reveal .num{background:#2c6b38; color:#eafff0}
+.opt.answered .why{display:block}
+.opt.sel-ok .why{color:#b9f0c6} .opt.sel-bad .why{color:#ffc9c5} .opt.reveal .why{color:#a8e6b8}
+.verdict{margin:0 14px 14px; padding:12px 15px; border-radius:9px; font-size:13.5px; display:none; line-height:1.75}
+.verdict.on{display:block}
+.verdict .lb{font-weight:700; display:block; margin-bottom:4px; font-size:12.5px; letter-spacing:.4px}
+.verdict.good{background:var(--okd); border:1px solid #2c6b38} .verdict.good .lb{color:#7ee787}
+.verdict.bad{background:var(--badd); border:1px solid #7a2b26} .verdict.bad .lb{color:#ff9d97}
+.verdict.info{background:#12233a; border:1px solid #274a75} .verdict.info .lb{color:#6db3ff}
+.qfoot{padding:0 14px 14px; display:flex; gap:10px; align-items:center}
+.qfoot .hint{font-size:12px; color:var(--mut); flex:1}
+
+/* ---------- 底栏 ---------- */
+.footer{border-top:1px solid var(--bd); background:var(--panel); padding:12px 22px; display:flex; gap:10px; align-items:center}
+.footer .sp{flex:1}
+.footer .pos{font-size:12.5px; color:var(--mut)}
+
+/* ---------- 手机 ---------- */
+.menubtn{display:none}
+@media(max-width:900px){
+  body{grid-template-columns:1fr}
+  aside{position:fixed; z-index:50; top:0; bottom:0; left:0; width:290px; transform:translateX(-100%); transition:.2s}
+  aside.open{transform:none; box-shadow:0 0 60px #000}
+  .menubtn{display:inline-block}
+  .content{padding:22px 18px 60px}
+  h2.title{font-size:20px}
+  .term{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+
+<aside id="side">
+  <div class="brand">
+    <h1>骨架示例</h1>
+    <p>三节最小可运行页面</p>
+    <div class="bar"><i id="pbar"></i></div>
+    <div class="pct"><span id="ptxt">进度 0%</span><span id="ptot"></span></div>
+  </div>
+  <nav id="nav"></nav>
+</aside>
+
+<main>
+  <div class="topbar">
+    <button class="ghost menubtn" onclick="LP.toggleMenu()">☰ 目录</button>
+    <span class="chip" id="crumbTop"></span>
+    <span class="sp"></span>
+    <button class="tiny ghost" onclick="LP.resetAll()">重新开始</button>
+  </div>
+
+  <div class="content" id="content"></div>
+
+  <div class="footer">
+    <button id="btnPrev" onclick="LP.go(-1)">← 上一题</button>
+    <span class="sp"></span>
+    <span class="pos" id="pos"></span>
+    <span class="sp"></span>
+    <button class="primary" id="btnNext" onclick="LP.go(1)">下一题 →</button>
+  </div>
+</main>
+
+<script>
+/* "骨架示例 · 学习指南"
+ * ---------------------------------------------------------------------------
+ * 内容源文件。只改这个文件，然后运行：
+ *     node learning-pages/tools/build.js <本目录>
+ *     node learning-pages/tools/validate.js <本目录>
+ * 写作规范（必读）：learning-pages/SPEC.md
+ *
+ * 下面三节是骨架示例：把内容换成你的，需要几节就复制几节。
+ * 每一节的字段含义见 SPEC.md 第 2 节。
+ * ---------------------------------------------------------------------------
+ */
+window.PAGE = {
+  meta: {
+    brand:      "骨架示例",        // 侧栏顶部的大标题
+    subtitle:   "三节最小可运行页面",     // 侧栏标题下面的小字
+    docTitle:   "骨架示例 · 学习指南",    // 浏览器标签页标题
+    storageKey: "demo_skeleton_guide_v1",  // 本地进度存档的键；内容大改后请把版本号 +1
+    // extraCss: `.wrap{max-width:900px}`,   // 需要时再加，一般不用
+  },
+
+  steps: [
+
+/* ======================= 第 0 章 · 开始之前 ======================= */
+{
+  id:'s0-1', ch:'第 0 章 · 开始之前',
+  title:'这份材料是给谁看的',
+  body:`
+  <p>先说清楚这份页面的定位：<b>它假设你在这个领域是零基础</b>，所以每个专业名词第一次出现时都会用生活里的东西打比方，并且单独放在青色的术语卡里。</p>
+  <div class="callout c-term"><span class="lb">术语卡 · 术语名</span>
+  用一句人话解释这个词。<b>先给比喻，再给定义。</b>不要用另一个术语来解释这个术语。</div>
+  <p>页面每一节末尾都有一道选择题。答完立刻能看到每个选项为什么对、为什么错——<b>答错才是学习的时刻</b>，所以别怕选错。</p>
+  <div class="callout c-key"><span class="lb">划重点</span>
+  这是本节最核心的那一句话，用蓝色卡片框起来。<b>一节最多一个。</b></div>
+  `,
+  q:{ type:'survey', text:'你现在的状态是？（引导题：没有对错，用来选路线）',
+    opts:[
+      {label:'完全零基础，从第一节开始', desc:'按顺序走', next:'s1-1'},
+      {label:'有点基础，想直接看重点', desc:'跳过铺垫', next:'s1-1'},
+      {label:'我只想查一个具体问题', desc:'可以随时用左侧目录跳', next:'s2-1'}
+    ],
+    summary:'引导题不判对错，它的作用是让读者自己选路径。'
+  }
+},
+
+/* ======================= 第 1 章 · 核心内容 ======================= */
+{
+  id:'s1-1', ch:'第 1 章 · 核心内容',
+  title:'第一节正课：一个概念 + 一道题',
+  body:`
+  <p><b>一句话大意：</b>先用一句话把这个知识点说清楚，让读者知道接下来要学什么。</p>
+  <p>再展开讲<b>为什么需要它</b>。零基础的人最容易被「怎么做」淹没，所以顺序永远是：<b>先讲为什么，再讲是什么，最后讲怎么做。</b></p>
+  <div class="callout c-term"><span class="lb">术语卡 · 第二个术语</span>
+  同样是生活化比喻 + 一句话定义。</div>
+  <div class="callout c-warn"><span class="lb">小心坑</span>
+  这是新手最容易翻车的地方。写清楚<b>现象是什么</b>、<b>原因是什么</b>、<b>怎么避免</b>。</div>
+  <div class="callout c-tip"><span class="lb">小技巧</span>
+  能省时间或提高正确率的实用经验。</div>
+  `,
+  q:{ type:'quiz', text:'这道题的问法是「下面哪个说法是对的」——题面要具体，不要问「你懂了吗」。',
+    opts:[
+      {label:'正确答案的写法：结论 + 一句理由', desc:'一句话说清它为什么对',
+       correct:true,
+       why:'正确答案的解释可以稍长，2~4 句。要讲清「为什么对」，而不是重复一遍选项本身。'},
+      {label:'一个真实存在的常见误解', desc:'这是读者的第一直觉',
+       why:'错误选项必须是<b>真的会有人这么想</b>的误解，不能是凑数的废话。解释要指出「哪里想错了」——这条最重要，因为读者大概率就是选了这一个。'},
+      {label:'另一个看起来很像的干扰项', desc:'似是而非',
+       why:'指出它错在哪个具体的点上。如果它只是「不够好」而不是「错」，那这个选项设计得有问题，应该换掉。'},
+      {label:'一个明显荒谬的选项', desc:'凑数用的',
+       why:'<b>不要放这种选项。</b>读者一眼排除，等于浪费了一个学习机会。好的选择题里，每个错误选项都对应一种真实的思维偏差。'}
+    ],
+    summary:'答题后显示的总结句：把这道题想传达的那一条认知单独拎出来。'
+  }
+},
+
+/* ======================= 第 2 章 · 收尾 ======================= */
+{
+  id:'s2-1', ch:'第 2 章 · 收尾',
+  title:'术语速查表 + 下一步',
+  body:`
+  <p>把全篇出现过的术语集中翻译一遍，方便读者做题卡住时回来查。</p>
+  <div class="callout c-term"><span class="lb">术语速查表</span>
+  <div class="term">
+    <b>术语一</b><span>一句话解释。</span>
+    <b>术语二</b><span>一句话解释。</span>
+    <b>术语三</b><span>一句话解释。</span>
+  </div></div>
+  <div class="callout c-task"><span class="lb">动手任务</span>
+  告诉读者看完之后<b>具体该去做什么</b>。只给方向，不要直接把答案写出来。</div>
+  <div class="callout c-key"><span class="lb">下一步</span>
+  给出后续学习路线，最好排个先后顺序。</div>
+  `,
+  q:{ type:'survey', text:'走完了。接下来做什么？',
+    opts:[
+      {label:'去动手做', desc:'最重要的一步', next:'s0-1'},
+      {label:'回到某一节重看', desc:'用左侧目录跳', next:'s0-1'},
+      {label:'从头再快速过一遍', desc:'加深印象', next:'s0-1'}
+    ],
+    summary:'看懂只是第一步，自己动手才是真正的学会。'
+  }
+}
+
+  ]
+};
+
+</script>
+<script>
+/* =========================================================================
+   交互式学习页 · 通用引擎
+   -------------------------------------------------------------------------
+   本文件与内容无关。它只读 window.PAGE：
+     PAGE.meta  = { brand, subtitle, docTitle, storageKey, extraCss }
+     PAGE.steps = [ { id, ch, title, tag?, body, q? } ]
+   题目规范见 learning-pages/SPEC.md，改内容请改 content.js，不要改这里。
+   ========================================================================= */
+(function () {
+  'use strict';
+
+  var PAGE  = window.PAGE || {};
+  var STEPS = PAGE.steps || [];
+  var META  = PAGE.meta  || {};
+  var KEY   = META.storageKey || ('learning-page::' + (META.docTitle || 'untitled'));
+
+  if (!STEPS.length) {
+    document.getElementById('content').innerHTML =
+      '<div class="wrap"><h2 class="title">这个页面还没有内容</h2>' +
+      '<p>请检查 <code>content.js</code> 里的 <code>window.PAGE.steps</code> 是否为空，然后重新运行构建脚本。</p></div>';
+    return;
+  }
+
+  var state = { idx: 0, answers: {} };
+
+  /* ---------------- 选项顺序打乱（防"闭眼选第一个"） ----------------
+     只对 quiz 生效；survey 是分诊/自评题，顺序本身有含义，必须保持原样。
+     用步骤 id 做哈希，所以同一份内容每次构建、每次刷新，顺序都完全一致。
+     想保留人工排序的题目，在该题里写 keepOrder:true 即可跳过。       */
+  function hash32(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    return h >>> 0;
+  }
+  function rotateQuizOptions() {
+    var rotated = 0;
+    for (var i = 0; i < STEPS.length; i++) {
+      var st = STEPS[i], q = st.q;
+      if (!q || q.type !== 'quiz' || q.keepOrder) continue;
+      var opts = q.opts;
+      if (!opts || opts.length < 2) continue;
+      var c = -1;
+      for (var j = 0; j < opts.length; j++) if (opts[j].correct) { c = j; break; }
+      if (c < 0) continue;
+      var n = opts.length;
+      var target = (hash32(st.id) + i) % n;
+      var k = ((c - target) % n + n) % n;    // 循环左移 k 位后，正确项落到 target
+      if (k === 0) continue;
+      q.opts = opts.slice(k).concat(opts.slice(0, k));
+      rotated++;
+    }
+    return rotated;
+  }
+  rotateQuizOptions();
+
+  /* ---------------- 查询辅助 ---------------- */
+  function stepIndex(id) {
+    for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i;
+    return -1;
+  }
+  function answerOf(st) { return state.answers[st.id]; }
+  function isDone(st)   { return state.answers[st.id] !== undefined; }
+  function isQuiz(st)   { return !!(st.q && st.q.type === 'quiz'); }
+  function score() {
+    var ok = 0, tot = 0;
+    for (var i = 0; i < STEPS.length; i++) {
+      var st = STEPS[i];
+      if (!isQuiz(st)) continue;
+      tot++;
+      var a = answerOf(st);
+      if (a !== undefined && st.q.opts[a] && st.q.opts[a].correct) ok++;
+    }
+    return { ok: ok, tot: tot };
+  }
+
+  /* ---------------- 存档 ---------------- */
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        if (p && typeof p.idx === 'number') state = p;
+      }
+    } catch (e) {}
+    if (state.idx == null || state.idx < 0 || state.idx >= STEPS.length) state.idx = 0;
+    if (!state.answers) state.answers = {};
+  }
+
+  /* ---------------- 侧栏 ---------------- */
+  function renderNav() {
+    var nav = document.getElementById('nav');
+    var html = '', lastCh = null, i, st, cls;
+    for (i = 0; i < STEPS.length; i++) {
+      st = STEPS[i];
+      if (st.ch !== lastCh) {
+        html += '<div class="grp">' + (st.ch || '') + '</div>';
+        lastCh = st.ch;
+      }
+      cls = ['', isDone(st) ? 'done' : '', i === state.idx ? 'cur' : ''].filter(Boolean).join(' ');
+      html += '<a class="' + cls + '" onclick="LP.jump(' + i + ')">' +
+              '<span class="dot">' + (isDone(st) ? '✓' : '') + '</span>' +
+              '<span>' + (st.title || '') + '</span></a>';
+    }
+    nav.innerHTML = html;
+
+    var total = STEPS.length, done = 0;
+    for (i = 0; i < STEPS.length; i++) if (isDone(STEPS[i])) done++;
+    var pct = Math.round(done * 100 / total);
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('ptxt').textContent = '进度 ' + pct + '%';
+    var sc = score();
+    document.getElementById('ptot').textContent = done + '/' + total + ' 节 · 答对 ' + sc.ok + '/' + sc.tot;
+  }
+
+  /* ---------------- 正文 ---------------- */
+  function render() {
+    var st = STEPS[state.idx];
+    if (!st) return;
+    var sel = answerOf(st);
+    var answered = sel !== undefined;
+
+    var html = '<div class="wrap">';
+    html += '<div class="crumb">' + (st.ch || '') + '</div>';
+    html += '<h2 class="title">' + (st.title || '') +
+            (st.tag ? '<span class="tag">' + st.tag + '</span>' : '') + '</h2>';
+    html += '<div class="body">' + (st.body || '') + '</div>';
+
+    if (st.q) {
+      var q = st.q, isSurvey = q.type === 'survey';
+      html += '<div class="quiz"><div class="qh">' +
+              '<span class="tag' + (isSurvey ? ' sv' : '') + '">' + (isSurvey ? '选一选' : '想一想') + '</span>' +
+              '<span class="qt">' + q.text + '</span></div><div class="opts">';
+
+      for (var i = 0; i < q.opts.length; i++) {
+        var o = q.opts[i], cls = ['opt'];
+        if (answered) {
+          cls.push('lock', 'answered');
+          if (i === sel) cls.push(isSurvey ? 'reveal' : (o.correct ? 'sel-ok' : 'sel-bad'));
+          else if (!isSurvey && o.correct) cls.push('reveal');
+        }
+        html += '<div class="' + cls.join(' ') + '" onclick="LP.choose(' + i + ')">';
+        html += '<span class="num">' + (i + 1) + '</span><span class="tx">';
+        html += '<span class="lb">' + o.label + '</span>';
+        if (o.desc) html += '<span class="ds">' + o.desc + '</span>';
+        if (answered && o.why) html += '<span class="why">' + o.why + '</span>';
+        html += '</span></div>';
+      }
+      html += '</div>';
+
+      if (answered) {
+        if (isSurvey) {
+          html += '<div class="verdict info on"><span class="lb">说明</span>' + (q.summary || '') + '</div>';
+        } else if (q.opts[sel] && q.opts[sel].correct) {
+          html += '<div class="verdict good on"><span class="lb">✓ 答对了</span>' + (q.summary || '') + '</div>';
+        } else {
+          html += '<div class="verdict bad on"><span class="lb">✗ 再看看绿色那条</span>' + (q.summary || '') +
+                  '<br>点击「重答本题」可以再试一次。</div>';
+        }
+      }
+
+      html += '<div class="qfoot">';
+      if (answered) html += '<button class="tiny ghost" onclick="LP.redo()">重答本题</button>';
+      html += '<span class="hint">' +
+              (answered ? '看懂了就继续 →'
+                        : '按数字键 <kbd>1</kbd>~<kbd>' + q.opts.length + '</kbd> 也可以选') +
+              '</span></div></div>';
+    }
+
+    html += '</div>';
+    var c = document.getElementById('content');
+    c.innerHTML = html;
+    c.scrollTop = 0;
+
+    document.getElementById('crumbTop').textContent =
+      (st.ch || '') + '  ·  ' + (state.idx + 1) + ' / ' + STEPS.length;
+    document.getElementById('btnPrev').disabled = state.idx === 0;
+
+    var isLast = state.idx === STEPS.length - 1;
+    var nx = (answered && st.q && st.q.opts[sel]) ? st.q.opts[sel].next : null;
+    document.getElementById('btnNext').textContent =
+      isLast ? '完成 ✓' : (nx ? '继续 →' : '下一题 →');
+
+    renderNav();
+    save();
+  }
+
+  /* ---------------- 交互 ---------------- */
+  function choose(i) {
+    var st = STEPS[state.idx];
+    if (!st.q || answerOf(st) !== undefined) return;
+    state.answers[st.id] = i;
+    render();
+  }
+  function redo() {
+    delete state.answers[STEPS[state.idx].id];
+    render();
+  }
+  function jump(i) {
+    if (i < 0 || i >= STEPS.length) return;
+    state.idx = i;
+    var side = document.getElementById('side');
+    if (side) side.classList.remove('open');
+    render();
+  }
+  function go(dir) {
+    var st = STEPS[state.idx];
+    var sel = answerOf(st);
+    if (dir > 0 && st.q && sel !== undefined && st.q.opts[sel]) {
+      var nx = st.q.opts[sel].next;
+      if (nx !== undefined) {
+        var t = stepIndex(nx);
+        if (t >= 0) { state.idx = t; render(); return; }
+      }
+    }
+    var n = state.idx + dir;
+    if (n < 0) n = 0;
+    if (n >= STEPS.length) n = STEPS.length - 1;
+    state.idx = n;
+    render();
+  }
+  function resetAll() {
+    if (!window.confirm('确定要清空所有进度重新开始吗？')) return;
+    state = { idx: 0, answers: {} };
+    save();
+    render();
+  }
+  function toggleMenu() {
+    var side = document.getElementById('side');
+    if (side) side.classList.toggle('open');
+  }
+
+  /* ---------------- 启动 ---------------- */
+  document.addEventListener('keydown', function (e) {
+    var st = STEPS[state.idx];
+    if (!st) return;
+    if (e.key >= '1' && e.key <= '9') {
+      var i = parseInt(e.key, 10) - 1;
+      if (st.q && i < st.q.opts.length) { choose(i); e.preventDefault(); }
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'Enter') { go(1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
+  });
+
+  window.LP = {
+    choose: choose, redo: redo, jump: jump, go: go,
+    resetAll: resetAll, toggleMenu: toggleMenu,
+    render: render,
+    state: state,
+    steps: STEPS,
+    meta: META,
+    _score: score
+  };
+
+  load();
+  render();
+})();
+
+</script>
+</body>
+</html>

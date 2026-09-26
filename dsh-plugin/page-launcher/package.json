@@ -1,0 +1,25 @@
+{
+  "name": "@dsh-external/dsh-client-ui-page-launcher",
+  "description": "页面速览桌宠：一个可拖动的浮动形象，点一下就能查看并打开工作区里做过的学习页面",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout"
+      ],
+      "platform": "web"
+    }
+  },
+  "license": "MIT"
+}

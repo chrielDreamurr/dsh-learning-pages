@@ -1,0 +1,23 @@
+# 忽略规则
+
+# 依赖与缓存
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+
+# uv 的临时环境（pdf2text.ps1 默认写到 %TEMP%，这里兜底）
+.uvcache/
+.uvpython/
+
+# 编辑器与系统
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 构建产物？—— 不忽略。
+# index.html 是有意提交的：它是自包含的单文件成品，clone 下来就能直接打开看效果。
+# 但它永远是可再生的，别手改；要改内容请改 content.js 再跑 build.js。
